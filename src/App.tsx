@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import "./App.css";
 import couple from "./assets/couple.jpg";
 import wife from "./assets/wife.jpg";
@@ -6,6 +6,7 @@ const pages = [
   { id: "home", label: "01 / hello" },
   { id: "wish", label: "02 / wishes" },
   { id: "end", label: "03 / forever" },
+  { id: "celebration", label: "04 / party" },
 ];
 
 const wishes = [
@@ -17,10 +18,185 @@ const wishes = [
 function App() {
   const [activePage, setActivePage] = useState("home");
   const [isOpened, setIsOpened] = useState(false);
+  const [isCelebrating, setIsCelebrating] = useState(false);
+  const [candlesOut, setCandlesOut] = useState(false);
+  const [fireworksBurst, setFireworksBurst] = useState(false);
+  const [fireworksCount, setFireworksCount] = useState(0);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const fireworksTimerRef = useRef<number | null>(null);
+  const musicTimerRef = useRef<number | null>(null);
 
   const goTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setActivePage(id);
+  };
+
+  const startCelebration = () => {
+    setIsCelebrating(true);
+    setMusicPlaying(true);
+    goTo("celebration");
+
+    const AudioContextClass = window.AudioContext;
+    if (!AudioContextClass) return;
+    void audioContextRef.current?.close();
+    const audioContext = new AudioContextClass();
+    audioContextRef.current = audioContext;
+    if (musicTimerRef.current !== null) {
+      window.clearTimeout(musicTimerRef.current);
+    }
+    musicTimerRef.current = window.setTimeout(() => {
+      setMusicPlaying(false);
+      musicTimerRef.current = null;
+    }, 12500);
+    const melody = [
+      [261.63, 0.28],
+      [261.63, 0.28],
+      [293.66, 0.5],
+      [261.63, 0.5],
+      [349.23, 0.5],
+      [329.63, 0.9],
+      [261.63, 0.28],
+      [261.63, 0.28],
+      [293.66, 0.5],
+      [261.63, 0.5],
+      [392.0, 0.5],
+      [349.23, 0.9],
+      [261.63, 0.28],
+      [261.63, 0.28],
+      [523.25, 0.5],
+      [440.0, 0.5],
+      [349.23, 0.5],
+      [329.63, 0.5],
+      [293.66, 0.9],
+      [466.16, 0.28],
+      [466.16, 0.28],
+      [440.0, 0.5],
+      [349.23, 0.5],
+      [392.0, 0.5],
+      [349.23, 1.0],
+    ] as const;
+    let startTime = audioContext.currentTime + 0.15;
+    melody.forEach(([frequency, duration]) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = "triangle";
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.13, startTime + 0.025);
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        startTime + duration - 0.04,
+      );
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration);
+      startTime += duration + 0.035;
+    });
+  };
+
+  const blowCandles = () => {
+    setCandlesOut(true);
+    setMusicPlaying(true);
+    setFireworksBurst(false);
+    setFireworksCount((count) => count + 1);
+    window.requestAnimationFrame(() => setFireworksBurst(true));
+    if (fireworksTimerRef.current !== null) {
+      window.clearTimeout(fireworksTimerRef.current);
+    }
+    fireworksTimerRef.current = window.setTimeout(() => {
+      setFireworksBurst(false);
+      fireworksTimerRef.current = null;
+    }, 12500);
+
+    const AudioContextClass = window.AudioContext;
+    if (!AudioContextClass) return;
+    void audioContextRef.current?.close();
+    const audioContext = new AudioContextClass();
+    audioContextRef.current = audioContext;
+    if (musicTimerRef.current !== null) {
+      window.clearTimeout(musicTimerRef.current);
+    }
+    musicTimerRef.current = window.setTimeout(() => {
+      setMusicPlaying(false);
+      musicTimerRef.current = null;
+    }, 12500);
+    const happyBirthday = [
+      [261.63, 0.28], [261.63, 0.28], [293.66, 0.5], [261.63, 0.5],
+      [349.23, 0.5], [329.63, 0.9], [261.63, 0.28], [261.63, 0.28],
+      [293.66, 0.5], [261.63, 0.5], [392, 0.5], [349.23, 0.9],
+      [261.63, 0.28], [261.63, 0.28], [523.25, 0.5], [440, 0.5],
+      [349.23, 0.5], [329.63, 0.5], [293.66, 0.9], [466.16, 0.28],
+      [466.16, 0.28], [440, 0.5], [349.23, 0.5], [392, 0.5],
+      [349.23, 1],
+    ] as const;
+    let melodyTime = audioContext.currentTime + 0.15;
+    happyBirthday.forEach(([frequency, duration]) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = "triangle";
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, melodyTime);
+      gain.gain.exponentialRampToValueAtTime(0.16, melodyTime + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, melodyTime + duration - 0.04);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(melodyTime);
+      oscillator.stop(melodyTime + duration);
+      melodyTime += duration + 0.035;
+    });
+    const buffer = audioContext.createBuffer(
+      1,
+      audioContext.sampleRate * 0.45,
+      audioContext.sampleRate,
+    );
+    const data = buffer.getChannelData(0);
+    for (let index = 0; index < data.length; index += 1) {
+      data[index] = (Math.random() * 2 - 1) * (1 - index / data.length);
+    }
+    const wind = audioContext.createBufferSource();
+    const windGain = audioContext.createGain();
+    wind.buffer = buffer;
+    windGain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    windGain.gain.exponentialRampToValueAtTime(
+      0.18,
+      audioContext.currentTime + 0.1,
+    );
+    windGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioContext.currentTime + 0.45,
+    );
+    wind.connect(windGain).connect(audioContext.destination);
+    wind.start();
+
+    const boom = audioContext.createOscillator();
+    const boomGain = audioContext.createGain();
+    boom.type = "sine";
+    boom.frequency.setValueAtTime(110, audioContext.currentTime);
+    boom.frequency.exponentialRampToValueAtTime(38, audioContext.currentTime + 0.55);
+    boomGain.gain.setValueAtTime(0.45, audioContext.currentTime);
+    boomGain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.65);
+    boom.connect(boomGain).connect(audioContext.destination);
+    boom.start();
+    boom.stop(audioContext.currentTime + 0.7);
+
+    [523.25, 659.25, 783.99, 1046.5].forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = "triangle";
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, audioContext.currentTime + index * 0.12);
+      gain.gain.exponentialRampToValueAtTime(
+        0.16,
+        audioContext.currentTime + index * 0.12 + 0.03,
+      );
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        audioContext.currentTime + index * 0.12 + 0.65,
+      );
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start(audioContext.currentTime + index * 0.12);
+      oscillator.stop(audioContext.currentTime + index * 0.12 + 0.7);
+    });
   };
 
   const openWish = () => {
@@ -97,6 +273,68 @@ function App() {
       </section>
 
       <section
+        className={`page-section celebration-section ${isCelebrating ? "celebration-started" : ""} ${fireworksBurst ? "fireworks-active" : ""}`}
+        id="celebration"
+      >
+        <div className="fireworks" aria-hidden="true">
+          {Array.from({ length: 12 }, (_, index) => (
+            <span key={index} style={{ "--i": index } as CSSProperties} />
+          ))}
+        </div>
+        <div className="celebration-copy">
+          <p className="eyebrow">
+            <span /> 04 / birthday party
+          </p>
+          <h2>
+            Happy Birthday
+            <br />
+            <em>vợ iu của anh!</em>
+          </h2>
+          <p>
+            Tuổi 24 thật rực rỡ nhé. Hôm nay em cứ cười thật nhiều, vì cả bầu
+            trời này đang cùng anh chúc mừng em.
+          </p>
+          <button
+            className="wish-button party-button"
+            type="button"
+            onClick={blowCandles}
+          >
+            <span>
+              {candlesOut ? "Thổi nến lần nữa ✦" : "Thổi nến & ước điều ước"}
+            </span>
+            <span className="button-arrow">♡</span>
+          </button>
+        </div>
+        <div
+          className={`cake-stage ${musicPlaying ? "music-candles" : ""} ${fireworksBurst ? "candles-burst" : ""}`}
+          aria-label="Bánh sinh nhật với nến"
+        >
+          <div className="cake-glow" />
+          <div className="cake">
+            <div className="candles">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+            <div className="flames">
+              <b />
+              <b />
+              <b />
+              <b />
+              <b />
+            </div>
+            <div className="cake-top" />
+            <div className="cake-cream" />
+            <div className="cake-base" />
+          </div>
+          <div className="dancer dancer-left">♡</div>
+          <div className="dancer dancer-right">♡</div>
+        </div>
+      </section>
+
+      <section
         className={`page-section wish-section ${isOpened ? "wish-card-visible" : ""}`}
         id="wish"
         aria-live="polite"
@@ -154,6 +392,13 @@ function App() {
             <span>Quay lại từ đầu</span>
             <span className="button-arrow">↗</span>
           </button>
+          <button
+            className="next-link party-link"
+            type="button"
+            onClick={startCelebration}
+          >
+            mở tiệc sinh nhật <span>↓</span>
+          </button>
         </div>
         <img
           className="end-image"
@@ -168,6 +413,17 @@ function App() {
         <span>for my lovely wife</span>
       </footer>
 
+      {fireworksBurst && (
+        <div className="burst-fireworks" aria-hidden="true">
+          <strong className="firework-icon icon-one">✦</strong>
+          <strong className="firework-icon icon-two">✺</strong>
+          <strong className="firework-icon icon-three">✧</strong>
+          <strong className="firework-icon icon-four">✹</strong>
+          {Array.from({ length: 32 }, (_, index) => (
+            <i key={`${fireworksCount}-${index}`} style={{ "--i": index } as CSSProperties} />
+          ))}
+        </div>
+      )}
       {isOpened && (
         <div className="confetti" aria-hidden="true">
           {Array.from({ length: 28 }, (_, index) => (
@@ -182,6 +438,16 @@ function App() {
             />
           ))}
         </div>
+      )}
+      {!isCelebrating && (
+        <button
+          className="party-fab"
+          type="button"
+          onClick={startCelebration}
+          aria-label="Mở màn chúc mừng sinh nhật"
+        >
+          ✦
+        </button>
       )}
     </main>
   );
