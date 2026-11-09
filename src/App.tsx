@@ -175,6 +175,7 @@ function App() {
 
   return (
     <main className={`birthday-page ${isOpened ? "is-opened" : ""}`}>
+      <h1>HHHAAA</h1>
       <div className="grain" aria-hidden="true" />
       <div className="aurora aurora-one" aria-hidden="true" />
       <div className="aurora aurora-two" aria-hidden="true" />
