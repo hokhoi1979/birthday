@@ -175,6 +175,7 @@ function App() {
 
   return (
     <main className={`birthday-page ${isOpened ? "is-opened" : ""}`}>
+      <h1 style={{ color: "red", fontSize: "40px" }}>TEST GIAO DIỆN MỚI</h1>
       <div className="grain" aria-hidden="true" />
       <div className="aurora aurora-one" aria-hidden="true" />
       <div className="aurora aurora-two" aria-hidden="true" />
