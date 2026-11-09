@@ -64,12 +64,30 @@ function App() {
       musicTimerRef.current = null;
     }, 12500);
     const happyBirthday = [
-      [261.63, 0.28], [261.63, 0.28], [293.66, 0.5], [261.63, 0.5],
-      [349.23, 0.5], [329.63, 0.9], [261.63, 0.28], [261.63, 0.28],
-      [293.66, 0.5], [261.63, 0.5], [392, 0.5], [349.23, 0.9],
-      [261.63, 0.28], [261.63, 0.28], [523.25, 0.5], [440, 0.5],
-      [349.23, 0.5], [329.63, 0.5], [293.66, 0.9], [466.16, 0.28],
-      [466.16, 0.28], [440, 0.5], [349.23, 0.5], [392, 0.5],
+      [261.63, 0.28],
+      [261.63, 0.28],
+      [293.66, 0.5],
+      [261.63, 0.5],
+      [349.23, 0.5],
+      [329.63, 0.9],
+      [261.63, 0.28],
+      [261.63, 0.28],
+      [293.66, 0.5],
+      [261.63, 0.5],
+      [392, 0.5],
+      [349.23, 0.9],
+      [261.63, 0.28],
+      [261.63, 0.28],
+      [523.25, 0.5],
+      [440, 0.5],
+      [349.23, 0.5],
+      [329.63, 0.5],
+      [293.66, 0.9],
+      [466.16, 0.28],
+      [466.16, 0.28],
+      [440, 0.5],
+      [349.23, 0.5],
+      [392, 0.5],
       [349.23, 1],
     ] as const;
     let melodyTime = audioContext.currentTime + 0.15;
@@ -80,7 +98,10 @@ function App() {
       oscillator.frequency.value = frequency;
       gain.gain.setValueAtTime(0.0001, melodyTime);
       gain.gain.exponentialRampToValueAtTime(0.16, melodyTime + 0.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001, melodyTime + duration - 0.04);
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        melodyTime + duration - 0.04,
+      );
       oscillator.connect(gain).connect(audioContext.destination);
       oscillator.start(melodyTime);
       oscillator.stop(melodyTime + duration);
@@ -114,9 +135,15 @@ function App() {
     const boomGain = audioContext.createGain();
     boom.type = "sine";
     boom.frequency.setValueAtTime(110, audioContext.currentTime);
-    boom.frequency.exponentialRampToValueAtTime(38, audioContext.currentTime + 0.55);
+    boom.frequency.exponentialRampToValueAtTime(
+      38,
+      audioContext.currentTime + 0.55,
+    );
     boomGain.gain.setValueAtTime(0.45, audioContext.currentTime);
-    boomGain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.65);
+    boomGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioContext.currentTime + 0.65,
+    );
     boom.connect(boomGain).connect(audioContext.destination);
     boom.start();
     boom.stop(audioContext.currentTime + 0.7);
@@ -362,7 +389,10 @@ function App() {
           <strong className="firework-icon icon-three">✧</strong>
           <strong className="firework-icon icon-four">✹</strong>
           {Array.from({ length: 32 }, (_, index) => (
-            <i key={`${fireworksCount}-${index}`} style={{ "--i": index } as CSSProperties} />
+            <i
+              key={`${fireworksCount}-${index}`}
+              style={{ "--i": index } as CSSProperties}
+            />
           ))}
         </div>
       )}
