@@ -34,65 +34,7 @@ function App() {
 
   const startCelebration = () => {
     setIsCelebrating(true);
-    setMusicPlaying(true);
     goTo("celebration");
-
-    const AudioContextClass = window.AudioContext;
-    if (!AudioContextClass) return;
-    void audioContextRef.current?.close();
-    const audioContext = new AudioContextClass();
-    audioContextRef.current = audioContext;
-    if (musicTimerRef.current !== null) {
-      window.clearTimeout(musicTimerRef.current);
-    }
-    musicTimerRef.current = window.setTimeout(() => {
-      setMusicPlaying(false);
-      musicTimerRef.current = null;
-    }, 12500);
-    const melody = [
-      [261.63, 0.28],
-      [261.63, 0.28],
-      [293.66, 0.5],
-      [261.63, 0.5],
-      [349.23, 0.5],
-      [329.63, 0.9],
-      [261.63, 0.28],
-      [261.63, 0.28],
-      [293.66, 0.5],
-      [261.63, 0.5],
-      [392.0, 0.5],
-      [349.23, 0.9],
-      [261.63, 0.28],
-      [261.63, 0.28],
-      [523.25, 0.5],
-      [440.0, 0.5],
-      [349.23, 0.5],
-      [329.63, 0.5],
-      [293.66, 0.9],
-      [466.16, 0.28],
-      [466.16, 0.28],
-      [440.0, 0.5],
-      [349.23, 0.5],
-      [392.0, 0.5],
-      [349.23, 1.0],
-    ] as const;
-    let startTime = audioContext.currentTime + 0.15;
-    melody.forEach(([frequency, duration]) => {
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      oscillator.type = "triangle";
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(0.0001, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.13, startTime + 0.025);
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        startTime + duration - 0.04,
-      );
-      oscillator.connect(gain).connect(audioContext.destination);
-      oscillator.start(startTime);
-      oscillator.stop(startTime + duration);
-      startTime += duration + 0.035;
-    });
   };
 
   const blowCandles = () => {

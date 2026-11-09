@@ -297,6 +297,10 @@ h1 em,
   background: rgba(171, 108, 255, 0.32);
   box-shadow: 0 10px 35px rgba(134, 73, 255, 0.28);
 }
+.party-button {
+  font-size: 15px;
+  padding: 16px 16px 16px 23px;
+}
 .button-arrow {
   display: grid;
   width: 29px;
